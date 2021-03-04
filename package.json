@@ -1,0 +1,10 @@
+{
+  "name": "channel-points-controller",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/liao-frank/channel-points-controller.git",
+  "license": "MIT",
+  "scripts": {
+    "start": "cd app && yarn run start"
+  }
+}
