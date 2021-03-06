@@ -1,14 +1,16 @@
-/* Electron entry point. */
-
 const { app, BrowserWindow } = require('electron')
+const { NAME, PROTOCOL } = require('./const')
 
-function createWindow () {
+require('./actions')
+
+const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    title: NAME,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   })
 
   win.loadFile('dist/index.html')
@@ -27,3 +29,5 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+app.setAsDefaultProtocolClient(PROTOCOL)
