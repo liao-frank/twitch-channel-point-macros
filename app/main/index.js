@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron')
-const { NAME, PROTOCOL } = require('./const')
+const { NAME } = require('./const')
 
 require('./actions')
 
@@ -9,6 +9,7 @@ const createWindow = () => {
     height: 600,
     title: NAME,
     webPreferences: {
+      contextIsolation: false,
       nodeIntegration: true,
     },
   })
@@ -29,5 +30,3 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
-app.setAsDefaultProtocolClient(PROTOCOL)

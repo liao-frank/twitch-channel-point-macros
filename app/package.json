@@ -2,8 +2,9 @@
   "name": "app",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "main",
+  "main": "./main/index.js",
   "scripts": {
+    "electron": "electron .",
     "start": "concurrently \"parcel watch renderer/index.html --public-url ./ --no-hmr --target electron\" \"electron .\""
   },
   "resolutions": {
@@ -12,16 +13,15 @@
   "devDependencies": {
     "concurrently": "^6.0.0",
     "electron": "^12.0.0",
-    "electron-reloader": "^1.2.0",
     "parcel-bundler": "^1.12.4",
     "typescript": "^4.2.2"
   },
   "dependencies": {
+    "bent": "^7.3.12",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "passport": "^0.4.1",
     "passport-oauth": "^1.0.0",
-    "portastic": "^1.0.1",
-    "request": "^2.88.2"
+    "portastic": "^1.0.1"
   }
 }
