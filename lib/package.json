@@ -1,0 +1,14 @@
+{
+  "name": "lib",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "cd browser && yarn run start",
+    "watch": "concurrently \"cd browser && yarn run watch\" \"cd renderer && yarn run watch\"",
+    "postinstall": "concurrently \"cd browser && yarn\" \"cd renderer && yarn\""
+  },
+  "devDependencies": {
+    "concurrently": "^6.0.0"
+  }
+}

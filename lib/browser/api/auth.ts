@@ -1,17 +1,17 @@
-const bent = require('bent')
-const electron = require('electron')
-const express = require('express')
-const passport = require('passport')
-const OAuth2Strategy = require('passport-oauth').OAuth2Strategy
-const portastic = require('portastic')
-const PromiseManager = require('../util/PromiseManager')
+import bent from 'bent'
+import electron from 'electron'
+import express from 'express'
+import passport from 'passport'
+import { OAuth2Strategy } from 'passport-oauth'
+import portastic from 'portastic'
+import { TWITCH_CLIENT_ID, TWITCH_SECRET } from '../const'
+import PromiseManager from '../util/PromiseManager'
 
-const { TWITCH_CLIENT_ID, TWITCH_SECRET } = require('../const')
 const PORT_OPTIONS = [22712, 31594, 19959, 12576, 18081]
-
 const revoke = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 200, 'string')
 
 let accessToken
+let port
 let refreshToken
 let tokensPromiseManager
 
@@ -64,8 +64,6 @@ const init = async () => {
     // TODO: Investigate `state: true`.
   },
     (accessTokenB, refreshTokenB, profile, done) => {
-      accessToken = accessTokenB
-      refreshToken = refreshTokenB
       tokensPromiseManager.short({ accessToken, refreshToken })
       done(null, profile)
     }
@@ -73,16 +71,21 @@ const init = async () => {
 }
 
 init()
-module.exports = {
+export default {
   async getTokens() {
     electron.shell.openExternal(`http://localhost:${port}/auth/twitch/`)
 
-    if (tokensPromiseManager && !tokensPromiseManager.completed) {
+    if (tokensPromiseManager && !tokensPromiseManager.fulfilled) {
       tokensPromiseManager.cancel()
     }
 
     tokensPromiseManager = PromiseManager.from(new Promise(() => { }))
-    return await tokensPromiseManager.promise
+    const result = await tokensPromiseManager.promise
+
+    accessToken = result.accessToken
+    refreshToken = result.refreshToken
+
+    return result
   },
   refreshTokens() {
 
@@ -90,6 +93,8 @@ module.exports = {
   async revokeTokens() {
     if (!accessToken) return
     await revoke(`?client_id=${TWITCH_CLIENT_ID}&token=${accessToken}`)
+    accessToken = undefined
+    refreshToken = undefined
   },
   get accessToken() { return accessToken },
   get refreshToken() { return refreshToken },

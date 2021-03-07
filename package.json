@@ -5,7 +5,8 @@
   "repository": "https://github.com/liao-frank/channel-points-controller.git",
   "license": "MIT",
   "scripts": {
-    "start": "cd app && yarn run start",
-    "postinstall": "cd app && yarn"
+    "start": "cd lib && yarn run start",
+    "watch": "cd lib && yarn run watch",
+    "postinstall": "cd lib && yarn"
   }
 }

@@ -1,7 +1,7 @@
-const { app, BrowserWindow } = require('electron')
-const { NAME } = require('./const')
+import { app, BrowserWindow } from 'electron'
+import { NAME } from './const'
 
-require('./actions')
+import './actions'
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -14,7 +14,7 @@ const createWindow = () => {
     },
   })
 
-  win.loadFile('dist/index.html')
+  win.loadFile(__dirname + '/../../renderer/dist/index.html')
 }
 
 app.whenReady().then(createWindow)
