@@ -38,7 +38,7 @@ class PromiseManager<T> {
     const manager = new PromiseManager(wrapperPromise, resolver, rejector)
 
     promise
-      .then(result => {
+      .then((result) => {
         manager.fulfilled = true
         resolver(result)
       })
