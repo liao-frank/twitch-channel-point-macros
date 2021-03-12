@@ -1,7 +1,8 @@
 import { app, BrowserWindow } from 'electron'
 import { NAME } from './const'
 
-import './actions'
+// Import API classes so they can set-up their actions.
+import './api'
 
 const createWindow = () => {
   const win = new BrowserWindow({

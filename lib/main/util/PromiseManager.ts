@@ -27,7 +27,7 @@ class PromiseManager<T> {
     this.fulfilled = true
   }
 
-  static from(promise) {
+  static from<X>(promise: Promise<X>): PromiseManager<X> {
     let resolver
     let rejector
     const wrapperPromise = new Promise((res, rej) => {
@@ -35,7 +35,7 @@ class PromiseManager<T> {
       rejector = rej
     })
 
-    const manager = new PromiseManager(wrapperPromise, resolver, rejector)
+    const manager = new PromiseManager<X>(wrapperPromise, resolver, rejector)
 
     promise
       .then((result) => {
@@ -48,6 +48,10 @@ class PromiseManager<T> {
       })
 
     return manager
+  }
+
+  static dependent<X>(): PromiseManager<X> {
+    return PromiseManager.from(new Promise(() => {}))
   }
 }
 
