@@ -1,11 +1,17 @@
 {
   "name": "channel-points-controller",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "https://github.com/liao-frank/channel-points-controller.git",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
-    "start": "cd app && yarn run start",
-    "postinstall": "cd app && yarn"
+    "start": "cd lib && yarn run start",
+    "watch": "cd lib && yarn run watch",
+    "postinstall": "cd lib && yarn",
+    "prettier": "prettier --write \"**/*.*(ts|tsx)\"",
+    "kill-node": "taskkill /im node.exe /F"
+  },
+  "devDependencies": {
+    "prettier": "2.2.1"
   }
 }

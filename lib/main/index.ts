@@ -1,17 +1,21 @@
-/* Electron entry point. */
+import { app, BrowserWindow } from 'electron'
+import { NAME } from './const'
 
-const { app, BrowserWindow } = require('electron')
+// Import API classes so they can set-up their actions.
+import './api'
 
-function createWindow () {
+const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    title: NAME,
     webPreferences: {
-      nodeIntegration: true
-    }
+      contextIsolation: false,
+      nodeIntegration: true,
+    },
   })
 
-  win.loadFile('dist/index.html')
+  win.loadFile(__dirname + '/../../renderer/dist/index.html')
 }
 
 app.whenReady().then(createWindow)
