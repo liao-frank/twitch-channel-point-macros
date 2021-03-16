@@ -23,6 +23,9 @@ class State<T> {
     this.action('get', () => this.get())
     this.action('set', (_, next: T) => this.set(next))
     this.action('reset', () => this.reset())
+    if (instance.fetch) {
+      this.action('fetch', () => instance.fetch())
+    }
   }
 
   // Registers an IPC action handler. This clears old handlers for the given prefix.

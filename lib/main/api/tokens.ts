@@ -30,7 +30,7 @@ class Tokens {
     })
 
     // Set-up state and extra actions.
-    this.state = new State(this, EMPTY_TOKENS_STATE)
+    this.state = new State(this, DEFAULT_TOKENS_STATE)
     this.state.action('fetch', () => this.fetch())
     this.state.action('revoke', () => this.revoke())
   }
@@ -57,7 +57,7 @@ class Tokens {
     const { accessToken } = this.state.get()
     if (!accessToken) return
     await REVOKE(`?client_id=${TWITCH_CLIENT_ID}&token=${accessToken}`)
-    this.state.set(EMPTY_TOKENS_STATE)
+    this.state.set(DEFAULT_TOKENS_STATE)
   }
 
   setupPassport({ port }: OauthServer) {
@@ -107,10 +107,7 @@ class Tokens {
   static async setupServer({ app }: OauthServer) {
     app.use(passport.initialize())
 
-    app.get(
-      '/auth/twitch',
-      passport.authenticate('twitch', { scope: 'user_read' })
-    )
+    app.get('/auth/twitch', passport.authenticate('twitch', { scope: SCOPES }))
     app.get(
       '/auth/twitch/callback',
       passport.authenticate('twitch', {
@@ -127,12 +124,17 @@ class Tokens {
   }
 }
 
-const EMPTY_TOKENS_STATE = {
+const DEFAULT_TOKENS_STATE = {
   accessToken: '',
   refreshToken: '',
 }
 const PORT_OPTIONS = [22712, 31594, 19959, 12576, 18081]
 const REVOKE = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 200, 'string')
+const SCOPES = [
+  'user:read:email',
+  'channel:read:redemptions',
+  'channel:manage:redemptions',
+]
 
 interface OauthServer {
   app: express.App
