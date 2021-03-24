@@ -1,6 +1,6 @@
 import bent from 'bent'
 import tokens from './tokens'
-import { TWITCH_CLIENT_ID } from '../const'
+import { TWITCH_CLIENT_ID } from '../const/env'
 
 const caller = bent('https://api.twitch.tv/', 'json')
 

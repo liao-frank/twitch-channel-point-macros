@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron'
-import { NAME } from './const'
+import { NAME } from './const/env'
 
 // Import API classes so they can set-up their actions.
 import './api'
