@@ -23,6 +23,8 @@
     "portastic": "^1.0.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.11",
+    "@types/passport": "^1.0.6",
     "concurrently": "^6.0.0",
     "parcel-bundler": "^1.12.4",
     "typescript": "^4.2.3"

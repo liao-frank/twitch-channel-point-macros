@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd main && yarn run start",
     "watch": "concurrently \"cd main && yarn run watch\" \"cd renderer && yarn run watch\"",
-    "postinstall": "concurrently \"cd main && yarn\" \"cd renderer && yarn\""
+    "postinstall": "cd main && yarn && cd ../renderer && yarn"
   },
   "devDependencies": {
     "concurrently": "^6.0.0"
