@@ -1,6 +1,7 @@
 import api from './api'
 import user from './user'
 import State from '../util/State'
+import { MOCK_REWARDS_RESPONSE } from '../const/mock'
 
 class Rewards {
   public state: State<RewardsState>
@@ -15,9 +16,19 @@ class Rewards {
     if (!broadcasterId) {
       throw Error('No broadcaster ID found.')
     }
-    const response = await api.call(
-      `helix/channel_points/custom_rewards?broadcaster_id=${broadcasterId}`
-    )
+
+    let response
+    try {
+      response = await api.call(
+        `helix/channel_points/custom_rewards?broadcaster_id=${broadcasterId}`
+      )
+    } catch (e) {
+      if (e.statusCode === 403) {
+        response = MOCK_REWARDS_RESPONSE
+      } else {
+        throw e
+      }
+    }
 
     const rewardsState = responseToState(response)
     this.state.set(rewardsState)
