@@ -4,7 +4,7 @@ import express from 'express'
 import passport from 'passport'
 import { OAuth2Strategy } from 'passport-oauth'
 import portastic from 'portastic'
-import { TWITCH_CLIENT_ID, TWITCH_SECRET } from '../const'
+import { TWITCH_CLIENT_ID, TWITCH_SECRET } from '../const/env'
 import PromiseManager from '../util/PromiseManager'
 import State from '../util/State'
 
