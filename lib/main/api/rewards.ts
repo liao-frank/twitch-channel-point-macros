@@ -6,7 +6,7 @@ class Rewards {
   public state: State<RewardsState>
 
   constructor() {
-    this.state = new State(this, DEFAULT_REWARDS_STATE)
+    this.state = new State(this)
   }
 
   async fetch() {
@@ -23,19 +23,20 @@ class Rewards {
     this.state.set(rewardsState)
     return rewardsState
   }
+
+  static get key() {
+    return 'rewards'
+  }
 }
 
-const DEFAULT_REWARDS_STATE: RewardsState = []
-
 type RewardsState = {
-  id: string,
-  backgroundColor: string,
-
+  id: string
+  backgroundColor: string
 }[]
 
 const responseToState = (response): RewardsState => {
   const rewards = response['data']
-  return rewards.map(reward => {
+  return rewards.map((reward) => {
     const { id, title, image, default_image, background_color } = reward
 
     return {
