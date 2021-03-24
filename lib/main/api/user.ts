@@ -5,7 +5,7 @@ class User {
   public state: State<UserState>
 
   constructor() {
-    this.state = new State(this, DEFAULT_USER_STATE)
+    this.state = new State(this)
   }
 
   async fetch() {
@@ -14,12 +14,10 @@ class User {
     this.state.set(state)
     return state
   }
-}
 
-const DEFAULT_USER_STATE: UserState = {
-  id: '',
-  displayName: '',
-  profileImageUrl: '',
+  static get key() {
+    return 'user'
+  }
 }
 
 interface UserState {

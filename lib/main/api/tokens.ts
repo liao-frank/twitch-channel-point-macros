@@ -30,7 +30,7 @@ class Tokens {
     })
 
     // Set-up state and extra actions.
-    this.state = new State(this, DEFAULT_TOKENS_STATE)
+    this.state = new State(this)
     this.state.action('fetch', () => this.fetch())
     this.state.action('revoke', () => this.revoke())
   }
@@ -57,7 +57,7 @@ class Tokens {
     const { accessToken } = this.state.get()
     if (!accessToken) return
     await REVOKE(`?client_id=${TWITCH_CLIENT_ID}&token=${accessToken}`)
-    this.state.set(DEFAULT_TOKENS_STATE)
+    this.state.delete()
   }
 
   setupPassport({ port }: OauthServer) {
@@ -122,12 +122,12 @@ class Tokens {
       res.send('Failure. <a href="/auth/twitch">Please try again.</a>')
     )
   }
+
+  static get key() {
+    return 'tokens'
+  }
 }
 
-const DEFAULT_TOKENS_STATE = {
-  accessToken: '',
-  refreshToken: '',
-}
 const PORT_OPTIONS = [22712, 31594, 19959, 12576, 18081]
 const REVOKE = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 200, 'string')
 const SCOPES = [

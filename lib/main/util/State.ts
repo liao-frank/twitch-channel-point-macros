@@ -7,11 +7,9 @@ const keys = new Set()
 
 class State<T> {
   private readonly key: string
-  private readonly defaultValue: T
 
-  constructor(instance, defaultValue: T) {
-    this.key = instance.constructor.name
-    this.defaultValue = defaultValue
+  constructor(instance) {
+    this.key = instance.constructor.key
 
     // Prevent duplicate keys.
     if (keys.has(this.key)) {
@@ -22,7 +20,7 @@ class State<T> {
     // Register default handlers.
     this.action('get', () => this.get())
     this.action('set', (_, next: T) => this.set(next))
-    this.action('reset', () => this.reset())
+    this.action('delete', () => this.delete())
     if (instance.fetch) {
       this.action('fetch', () => instance.fetch())
     }
@@ -38,15 +36,15 @@ class State<T> {
   }
 
   get(): T {
-    return store.get(this.key, this.defaultValue) as T
+    return store.get(this.key) as T
   }
 
   set(next: T) {
     store.set(this.key, next)
   }
 
-  reset() {
-    this.set(this.defaultValue)
+  delete() {
+    store.delete(this.key)
   }
 }
 
