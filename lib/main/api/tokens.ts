@@ -4,6 +4,7 @@ import express from 'express'
 import passport from 'passport'
 import { OAuth2Strategy } from 'passport-oauth'
 import portastic from 'portastic'
+import { PORT_OPTIONS, SCOPES } from '../const/app'
 import { TWITCH_CLIENT_ID, TWITCH_SECRET } from '../const/env'
 import PromiseManager from '../util/PromiseManager'
 import State from '../util/State'
@@ -128,13 +129,7 @@ class Tokens {
   }
 }
 
-const PORT_OPTIONS = [22712, 31594, 19959, 12576, 18081]
 const REVOKE = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 200, 'string')
-const SCOPES = [
-  'user:read:email',
-  'channel:read:redemptions',
-  'channel:manage:redemptions',
-]
 
 interface OauthServer {
   app: express.App
