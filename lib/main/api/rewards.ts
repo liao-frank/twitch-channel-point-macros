@@ -4,7 +4,7 @@ import State from '../util/State'
 import { MOCK_REWARDS_RESPONSE } from '../const/mock'
 
 class Rewards {
-  public state: State<RewardsState>
+  public state: State<Reward[]>
 
   constructor() {
     this.state = new State(this)
@@ -34,18 +34,26 @@ class Rewards {
     this.state.set(rewardsState)
     return rewardsState
   }
-
   static get key() {
     return 'rewards'
   }
 }
 
-type RewardsState = {
-  id: string
-  backgroundColor: string
-}[]
+export interface ImageSet {
+  url_1x: string
+  url_2x: string
+  url_4x: string
+}
 
-const responseToState = (response): RewardsState => {
+export interface Reward {
+  id: string
+  title: string
+  image?: ImageSet
+  backgroundColor: string
+  defaultImage: ImageSet
+}
+
+const responseToState = (response): Reward[] => {
   const rewards = response['data']
   return rewards.map((reward) => {
     const { id, title, image, default_image, background_color } = reward
