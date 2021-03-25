@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
+import robot from './util/robot'
 import { NAME } from './const'
 
 // Import API classes so they can set-up their actions.

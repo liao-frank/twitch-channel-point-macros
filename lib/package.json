@@ -4,11 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "postinstall": "cd main && yarn && cd ../renderer && yarn",
+    "rebuild-robotjs": "node scripts/rebuild-robotjs.js",
     "start": "cd main && yarn run start",
-    "watch": "concurrently \"cd main && yarn run watch\" \"cd renderer && yarn run watch\"",
-    "postinstall": "cd main && yarn && cd ../renderer && yarn"
+    "watch": "concurrently \"cd main && yarn run watch\" \"cd renderer && yarn run watch\""
   },
   "devDependencies": {
     "concurrently": "^6.0.0"
+  },
+  "dependencies": {
+    "node-abi": "^2.21.0",
+    "node-cmd": "^4.0.0"
   }
 }
