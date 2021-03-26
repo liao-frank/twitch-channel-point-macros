@@ -1,5 +1,4 @@
 import cmd from 'node-cmd'
-import { desktopCapturer } from 'electron'
 import psList from 'ps-list'
 import robot from 'robotjs'
 import Store from 'electron-store'
@@ -7,6 +6,7 @@ import Store from 'electron-store'
 const store = new Store()
 
 class Robot {
+  // Returns whether or not the trigger passed its conditions and performed its sequence.
   async trigger(id: string) {
     const sequence = store.get(id) as Sequence
     if (sequence.openedApp) {
@@ -27,6 +27,7 @@ class Robot {
     store.delete(id)
   }
 
+  // Returns deduped list of open processes.
   private async getOpenProcesses() {
     const list = await psList()
     const dedupedList = list
@@ -51,7 +52,7 @@ class Robot {
         } else if (action.string) {
           robot.typeString(action.string)
         } else if (action.command) {
-          cmd.run(action.command, () => {})
+          cmd.run(action.command, /* callback: */ () => {})
         }
         resolve()
       }, action.delay || 0)
@@ -67,7 +68,6 @@ class Robot {
 
 interface Action {
   delay?: number
-  duration?: number
   key?: string
   string?: string
   modifierKey?: string
@@ -76,7 +76,6 @@ interface Action {
 
 interface Sequence {
   actions: Action[]
-  focusedApp?: string
   openedApp?: string
 }
 
