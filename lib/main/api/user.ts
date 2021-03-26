@@ -1,18 +1,40 @@
 import api from './api'
+import { isEqual } from 'lodash'
 import State from '../util/State'
 
-class User {
-  public state: State<UserState>
+class UserHelper {
+  private state: State<User>
 
   constructor() {
     this.state = new State(this)
+
+    api.poll('helix/users', undefined, this.handleResponse.bind(this))
   }
 
   async fetch() {
     const response = await api.call('helix/users')
-    const state = responseToState(response)
-    this.state.set(state)
-    return state
+    this.handleResponse(response)
+  }
+
+  get(): User | undefined {
+    return this.state.get()
+  }
+
+  private handleResponse(response) {
+    const user = UserHelper.getUser(response)
+    if (!isEqual(user, this.state.get())) {
+      this.state.set(user)
+    }
+  }
+
+  static getUser(json): User {
+    const userData = json['data'][0]
+
+    return {
+      id: userData.id,
+      displayName: userData.display_name,
+      profileImageUrl: userData.profile_image_url,
+    }
   }
 
   static get key() {
@@ -20,20 +42,10 @@ class User {
   }
 }
 
-interface UserState {
+export interface User {
   id: string
   displayName: string
   profileImageUrl: string
 }
 
-const responseToState = (response) => {
-  const user = response['data'][0]
-
-  return {
-    id: user.id,
-    displayName: user.display_name,
-    profileImageUrl: user.profile_image_url,
-  }
-}
-
-export default new User()
+export default new UserHelper()

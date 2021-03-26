@@ -1,7 +1,7 @@
 import api from './api'
 import user from './user'
 import rewards, { Reward } from './rewards'
-import { REDEMPTION_POLL_INTERVAL } from '../const/app'
+import { POLL_INTERVAL } from '../const/app'
 
 class RedemptionHelper {
   private readonly cutoffs = new Map<
@@ -23,11 +23,13 @@ class RedemptionHelper {
         if (!listener) continue
 
         const redemptions = incoming.get(rewardId)
-        for (const redemption of redemptions) {
-          listener(redemption)
+        if (redemptions) {
+          for (const redemption of redemptions) {
+            listener(redemption)
+          }
         }
       }
-    }, REDEMPTION_POLL_INTERVAL)
+    }, POLL_INTERVAL)
   }
 
   setListener(rewardId: string, listener: RedemptionListener) {
@@ -36,12 +38,16 @@ class RedemptionHelper {
 
   // Fetches a map of new (aka incoming) redemptions, keyed by reward id.
   private async fetch(): Promise<Map</* rewardId: */ string, Redemption[]>> {
-    const broadcasterId = user.state.get().id
-    if (!broadcasterId) {
+    const userState = user.get()
+    if (!userState) {
       throw Error('No broadcaster ID found.')
     }
+    const broadcasterId = userState.id
 
-    const rewardArr = rewards.state.get()
+    const rewardArr = rewards.get()
+    if (!rewardArr) {
+      throw Error('No rewards found.')
+    }
 
     // Fetch array of new redemptions for each reward.
     const redemptions: Redemption[][] = await Promise.all(
@@ -59,7 +65,7 @@ class RedemptionHelper {
     }, new Map())
   }
 
-  // Fetches redemptions that the
+  // Fetches redemptions for the given reward id and filters out redemptions before cutoff.
   private async fetchOne(broadcasterId: string, rewardId: string) {
     const params = new URLSearchParams()
     params.append('broadcaster_id', broadcasterId)
@@ -69,8 +75,10 @@ class RedemptionHelper {
     params.append('status', 'UNFULFILLED')
 
     const response = await api.call(
-      `helix/channel_points/custom_rewards/redemptions?${params.toString()}`
+      `helix/channel_points/custom_rewards/redemptions?${params.toString()}`,
+      undefined
     )
+    console.log(response)
     let redemptions = RedemptionHelper.getRedemptions(response)
 
     const newCutoff = redemptions[0]
@@ -83,7 +91,7 @@ class RedemptionHelper {
     }
 
     // Filter out redemptions before the cutoff.
-    const cutoff = this.cutoffs.get(rewardId)
+    const cutoff = this.cutoffs.get(rewardId) as Date
     redemptions = redemptions.filter(
       (redemption) => cutoff < new Date(redemption.redeemedAt)
     )
@@ -95,9 +103,9 @@ class RedemptionHelper {
   }
 
   static getRedemptions(json): Redemption[] {
-    const redemptions = json['data']
+    const redemptionsData = json['data']
 
-    return redemptions.map((redemption) => {
+    return redemptionsData.map((redemption) => {
       const {
         id,
         user_login,
