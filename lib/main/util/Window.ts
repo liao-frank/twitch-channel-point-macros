@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import PromiseManager from './PromiseManager'
-import { NAME } from '../const'
+import { NAME } from '../const/app'
 
 type WindowListener = (window: BrowserWindow) => void
 

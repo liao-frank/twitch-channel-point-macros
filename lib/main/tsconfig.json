@@ -1,8 +1,8 @@
 {
-    "compilerOptions": {
-      "esModuleInterop": true,
-      "moduleResolution": "node",
-      "strictNullChecks": true,
-      "target": "ES6"
-    },
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "target": "ES6"
+  }
 }

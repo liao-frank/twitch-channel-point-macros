@@ -31,6 +31,7 @@ class TokensHelper {
 
     // Set-up state and extra actions.
     this.state = new State(this)
+    this.state.action('get', async () => (await this.get()) && null)
     this.state.action('fetch', () => this.fetch())
     this.state.action('revoke', () => this.revoke())
   }
@@ -87,8 +88,14 @@ class TokensHelper {
     })
   }
 
-  get(): Tokens | undefined {
-    return this.state.get()
+  async get(): Promise<Tokens | undefined> {
+    const tokens = this.state.get()
+    try {
+      await VALIDATE(``, null, { Authorization: `OAuth ${tokens.accessToken}` })
+      return tokens
+    } catch {
+      return
+    }
   }
 
   static async createServer(): Promise<OauthServer> {
@@ -133,7 +140,8 @@ class TokensHelper {
   }
 }
 
-const REVOKE = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 200, 'string')
+const REVOKE = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 'string')
+const VALIDATE = bent('https://id.twitch.tv/oauth2/validate', 'json')
 
 interface OauthServer {
   app: express.App

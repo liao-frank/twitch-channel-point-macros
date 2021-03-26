@@ -14,12 +14,19 @@ class RewardsHelper {
       RewardsHelper.getPath,
       undefined,
       this.handleResponse.bind(this),
-      new Map([[403, MOCK_REWARDS_RESPONSE]])
+      MOCK_MAP
     )
+
+    this.state.action('get', () => this.get())
+    this.state.action('fetch', () => this.fetch())
   }
 
   async fetch() {
-    const response = await api.call(RewardsHelper.getPath())
+    const response = await api.call(
+      RewardsHelper.getPath(),
+      undefined,
+      MOCK_MAP
+    )
     this.handleResponse(response)
   }
 
@@ -59,6 +66,8 @@ class RewardsHelper {
     return 'rewards'
   }
 }
+
+const MOCK_MAP = new Map([[403, MOCK_REWARDS_RESPONSE]])
 
 export interface ImageSet {
   url_1x: string
