@@ -1,17 +1,12 @@
+import { ipcRenderer } from 'electron'
 import * as React from 'react'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
+import Login from '~/ui/Login'
 
-// TODO: Move types to 'lib/common'.
-type AppState = {
-  user: any
-  rewards: any
-  redemptions: any
-}
-
-class App extends React.Component<{}, AppState> {
+class App extends React.Component<{}, any> {
   constructor(props) {
     super(props)
 
@@ -20,20 +15,18 @@ class App extends React.Component<{}, AppState> {
       rewards: [],
       redemptions: [],
     }
+
+    // Set-up state listener.
+    ipcRenderer.on('state', (_, state) => {
+      debugger
+      this.setState(state)
+    })
   }
 
   render() {
-    const {user} = this.state
-    return (
-      user.id ?
-        <Topbar /> :
-        <Login />
-    )
+    const { user } = this.state
+    return user.id ? <Topbar /> : <Login />
   }
-}
-
-const Login = () => {
-  return <Container></Container>
 }
 
 const Topbar = () => {

@@ -1,0 +1,62 @@
+@import '~/index.scss';
+
+@mixin spaceship-background {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50rem;
+}
+
+.b1e1 {
+  @include spaceship-background;
+
+  .card {
+    background-color: transparent;
+    overflow: hidden;
+    z-index: 0;
+
+    .background {
+      @include spaceship-background;
+
+      bottom: 0;
+      filter: contrast(0.4) brightness(1.24) saturate(1.8) blur(0.8rem);
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: -1;
+    }
+
+    .card-header {
+      $card-header-font-size: 2rem;
+
+      font-size: $card-header-font-size;
+      padding: 1.5rem 1rem;
+
+      .logo {
+        display: block;
+        height: $card-header-font-size * 1.2;
+        margin: 0 auto 0.8rem auto;
+      }
+    }
+
+    .card-body {
+      // background-color: rgba(255, 255, 255, 0.2);
+
+      .btn {
+        .icon {
+          bottom: 2px;
+          height: 16px;
+          position: 'relative';
+          width: 16px;
+        }
+
+        .divider {
+          background-color: $indigo-300;
+          height: 1rem;
+          margin: 0 0.75rem;
+          width: 1px;
+        }
+      }
+    }
+  }
+}

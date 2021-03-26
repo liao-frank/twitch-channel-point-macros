@@ -1,6 +1,7 @@
-import { ipcMain } from 'electron'
+import {BrowserWindow, ipcMain} from 'electron'
 import Store from 'electron-store'
-import { kebabCase } from 'lodash'
+import {kebabCase} from 'lodash'
+import Window from './Window'
 
 const store = new Store()
 const keys = new Set()
@@ -17,13 +18,17 @@ class State<T> {
     }
     keys.add(this.key)
 
-    // Register default handlers.
-    this.action('get', () => this.get())
-    this.action('set', (_, next: T) => this.set(next))
-    this.action('delete', () => this.delete())
-    if (instance.fetch) {
-      this.action('fetch', () => instance.fetch())
-    }
+    // Set-up state listener.
+    Window.addListener((win: BrowserWindow) => {
+      store.onDidChange(this.key, async (state) => {
+        if (this.key === 'tokens') {
+          state = null
+        }
+        win.webContents.send('state', {
+          [this.key]: state,
+        })
+      })
+    })
   }
 
   // Registers an IPC action handler. This clears old handlers for the given prefix.
