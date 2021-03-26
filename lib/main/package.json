@@ -4,9 +4,9 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
+    "postinstall": "parcel build index.ts --target node",
     "start": "electron ./dist",
-    "watch": "parcel watch index.ts --no-hmr --target node",
-    "postinstall": "parcel build index.ts --target node"
+    "watch": "parcel watch index.ts --no-hmr --target node"
   },
   "resolutions": {
     "@babel/preset-env": "7.13.8"
@@ -20,7 +20,9 @@
     "lodash": "^4.17.21",
     "passport": "^0.4.1",
     "passport-oauth": "^1.0.0",
-    "portastic": "^1.0.1"
+    "portastic": "^1.0.1",
+    "ps-list": "^7.2.0",
+    "robotjs": "^0.6.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",

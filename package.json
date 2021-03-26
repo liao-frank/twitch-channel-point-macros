@@ -5,11 +5,12 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "start": "cd lib && yarn run start",
-    "watch": "cd lib && yarn run watch",
+    "kill-node": "taskkill /im node.exe /F",
     "postinstall": "cd lib && yarn",
     "prettier": "prettier --write \"**/*.*(ts|tsx)\"",
-    "kill-node": "taskkill /im node.exe /F"
+    "rebuild-robotjs": "cd lib && yarn rebuild-robotjs",
+    "start": "cd lib && yarn start",
+    "watch": "cd lib && yarn watch"
   },
   "devDependencies": {
     "prettier": "2.2.1"
