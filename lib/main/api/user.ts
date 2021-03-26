@@ -9,6 +9,9 @@ class UserHelper {
     this.state = new State(this)
 
     api.poll('helix/users', undefined, this.handleResponse.bind(this))
+
+    this.state.action('get', () => this.get())
+    this.state.action('fetch', () => this.fetch())
   }
 
   async fetch() {

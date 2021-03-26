@@ -12,7 +12,7 @@ class Api {
     mockMap?: Map</* statusCode: */ number, /* mockResponse: */ any>
   ) {
     if (!body) body = null
-    const tokensState = tokens.get()
+    const tokensState = await tokens.get()
     if (!tokensState) {
       throw new NoAccessTokenFoundError()
     }

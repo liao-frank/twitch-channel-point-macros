@@ -21,7 +21,7 @@ class State<T> {
     // Set-up state listener.
     Window.addListener((win: BrowserWindow) => {
       store.onDidChange(this.key, async (state) => {
-        if (this.key === 'tokens') {
+        if (this.key === 'tokens' && state) {
           state = null
         }
         win.webContents.send('state', {
@@ -29,13 +29,6 @@ class State<T> {
         })
       })
     })
-    // Register default handlers.
-    if (instance.get) {
-      this.action('get', () => instance.get())
-    }
-    if (instance.fetch) {
-      this.action('fetch', () => instance.fetch())
-    }
   }
 
   // Registers an IPC action handler. This clears old handlers for the given prefix.
