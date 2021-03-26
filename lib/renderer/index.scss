@@ -1,0 +1,24 @@
+// Default variable overrides
+$primary: #8540f5; // $indigo-400
+$secondary: #da22ff;
+
+// Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap';
+
+body {
+  background-color: $white;
+}
+
+@mixin gradient {
+  background: $primary; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    $primary,
+    $secondary
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    $primary,
+    $secondary
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
