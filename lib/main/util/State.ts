@@ -1,6 +1,6 @@
-import {BrowserWindow, ipcMain} from 'electron'
+import { BrowserWindow, ipcMain } from 'electron'
 import Store from 'electron-store'
-import {kebabCase} from 'lodash'
+import { kebabCase } from 'lodash'
 import Window from './Window'
 
 const store = new Store()

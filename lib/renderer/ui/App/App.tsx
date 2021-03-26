@@ -6,26 +6,26 @@ import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Login from '~/ui/Login'
 
+// TODO: Apply this interface.
+interface AppState {
+  tokens: null | undefined // `null` means tokens available.
+}
+
 class App extends React.Component<{}, any> {
   constructor(props) {
     super(props)
 
-    this.state = {
-      user: {},
-      rewards: [],
-      redemptions: [],
-    }
+    this.state = {}
 
     // Set-up state listener.
     ipcRenderer.on('state', (_, state) => {
-      debugger
       this.setState(state)
     })
   }
 
   render() {
-    const { user } = this.state
-    return user.id ? <Topbar /> : <Login />
+    const { tokens } = this.state
+    return tokens === undefined ? <Login /> : <Topbar />
   }
 }
 
