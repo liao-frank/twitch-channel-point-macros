@@ -3,7 +3,7 @@ import Store from 'electron-store'
 import { kebabCase } from 'lodash'
 import Window from './Window'
 
-const store = new Store()
+export const store = new Store()
 const keys = new Set()
 
 class State<T> {
@@ -29,6 +29,13 @@ class State<T> {
         })
       })
     })
+    // Register default handlers.
+    if (instance.get) {
+      this.action('get', () => instance.get())
+    }
+    if (instance.fetch) {
+      this.action('fetch', () => instance.fetch())
+    }
   }
 
   // Registers an IPC action handler. This clears old handlers for the given prefix.

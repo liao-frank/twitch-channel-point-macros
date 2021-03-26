@@ -1,39 +1,60 @@
 import api from './api'
+import { isEqual } from 'lodash'
 import user from './user'
 import State from '../util/State'
 import { MOCK_REWARDS_RESPONSE } from '../const/mock'
 
-class Rewards {
-  public state: State<Reward[]>
+class RewardsHelper {
+  private state: State<Reward[]>
 
   constructor() {
     this.state = new State(this)
+
+    api.poll(
+      RewardsHelper.getPath,
+      undefined,
+      this.handleResponse.bind(this),
+      new Map([[403, MOCK_REWARDS_RESPONSE]])
+    )
   }
 
   async fetch() {
-    const broadcasterId = user.state.get().id
-
-    if (!broadcasterId) {
-      throw Error('No broadcaster ID found.')
-    }
-
-    let response
-    try {
-      response = await api.call(
-        `helix/channel_points/custom_rewards?broadcaster_id=${broadcasterId}`
-      )
-    } catch (e) {
-      if (e.statusCode === 403) {
-        response = MOCK_REWARDS_RESPONSE
-      } else {
-        throw e
-      }
-    }
-
-    const rewardsState = responseToState(response)
-    this.state.set(rewardsState)
-    return rewardsState
+    const response = await api.call(RewardsHelper.getPath())
+    this.handleResponse(response)
   }
+
+  get(): Reward[] | undefined {
+    return this.state.get()
+  }
+
+  private handleResponse(response) {
+    const rewards = RewardsHelper.getRewards(response)
+    if (!isEqual(rewards, this.state.get())) {
+      this.state.set(rewards)
+    }
+  }
+
+  static getPath(): string {
+    const userState = user.get()
+    if (!userState) return ''
+    return `helix/channel_points/custom_rewards?broadcaster_id=${userState.id}`
+  }
+
+  static getRewards(json): Reward[] {
+    const rewardsData = json['data']
+    return rewardsData.map((reward) => {
+      const { id, title, image, default_image, background_color } = reward
+
+      return {
+        id,
+        title,
+        image,
+        defaultImage: default_image,
+        backgroundColor: background_color,
+      }
+    })
+  }
+
   static get key() {
     return 'rewards'
   }
@@ -53,19 +74,4 @@ export interface Reward {
   defaultImage: ImageSet
 }
 
-const responseToState = (response): Reward[] => {
-  const rewards = response['data']
-  return rewards.map((reward) => {
-    const { id, title, image, default_image, background_color } = reward
-
-    return {
-      id,
-      title,
-      image,
-      defaultImage: default_image,
-      backgroundColor: background_color,
-    }
-  })
-}
-
-export default new Rewards()
+export default new RewardsHelper()

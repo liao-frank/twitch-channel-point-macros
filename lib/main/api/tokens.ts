@@ -7,25 +7,24 @@ import portastic from 'portastic'
 import { PORT_OPTIONS, SCOPES } from '../const/app'
 import { TWITCH_CLIENT_ID, TWITCH_SECRET } from '../const/env'
 import PromiseManager from '../util/PromiseManager'
-import State from '../util/State'
+import State, { store } from '../util/State'
 
-class Tokens {
-  public state: State<TokensState>
-
+class TokensHelper {
   public oauthServer?: OauthServer
   public oauthServerPromise: Promise<OauthServer>
   private readonly oauthServerPromiseManager: PromiseManager<OauthServer>
 
-  private fetchPromiseManager?: PromiseManager<TokensState>
+  private fetchPromiseManager?: PromiseManager<Tokens>
+  private state: State<Tokens>
 
   constructor() {
     this.oauthServerPromiseManager = PromiseManager.dependent<OauthServer>()
     this.oauthServerPromise = this.oauthServerPromiseManager.promise
     // Create and set-up OAuth server.
-    Tokens.createServer().then((oauthServer) => {
+    TokensHelper.createServer().then((oauthServer) => {
       this.oauthServer = oauthServer
       this.oauthServerPromiseManager.short(oauthServer)
-      Tokens.setupServer(oauthServer)
+      TokensHelper.setupServer(oauthServer)
       // Set-up passport.
       this.setupPassport(oauthServer)
     })
@@ -47,7 +46,7 @@ class Tokens {
       this.fetchPromiseManager.cancel()
     }
 
-    this.fetchPromiseManager = PromiseManager.dependent<TokensState>()
+    this.fetchPromiseManager = PromiseManager.dependent<Tokens>()
     const result = await this.fetchPromiseManager.promise
     this.state.set(result)
 
@@ -58,7 +57,7 @@ class Tokens {
     const { accessToken } = this.state.get()
     if (!accessToken) return
     await REVOKE(`?client_id=${TWITCH_CLIENT_ID}&token=${accessToken}`)
-    this.state.delete()
+    store.clear()
   }
 
   setupPassport({ port }: OauthServer) {
@@ -83,8 +82,13 @@ class Tokens {
       done(null, user)
     })
     passport.deserializeUser((user, done) => {
+      // @ts-ignore
       done(null, user)
     })
+  }
+
+  get(): Tokens | undefined {
+    return this.state.get()
   }
 
   static async createServer(): Promise<OauthServer> {
@@ -137,9 +141,9 @@ interface OauthServer {
   port: number
 }
 
-interface TokensState {
+export interface Tokens {
   accessToken: string
   refreshToken: string
 }
 
-export default new Tokens()
+export default new TokensHelper()
