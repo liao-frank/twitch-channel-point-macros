@@ -6,11 +6,11 @@
   "main": "index.js",
   "scripts": {
     "kill-node": "taskkill /im node.exe /F",
-    "postinstall": "cd lib && yarn",
+    "postinstall": "cd src && yarn",
     "prettier": "prettier --write \"**/*.*(js|json|scss|ts|tsx)\"",
-    "rebuild": "cd lib && yarn rebuild",
-    "start": "cd lib && yarn start",
-    "watch": "cd lib && yarn watch"
+    "rebuild": "cd src && yarn rebuild",
+    "start": "cd src && yarn start",
+    "watch": "cd src && yarn watch"
   },
   "devDependencies": {
     "prettier": "2.2.1"
