@@ -1,12 +1,11 @@
 @import '~/index.scss';
 
 @mixin spaceship-background {
-  background-position: center;
-  background-repeat: no-repeat;
+  @include backgroundImage;
   background-size: 50rem;
 }
 
-.b1e1 {
+.b1e1 /* Login */ {
   @include spaceship-background;
 
   .card {
@@ -40,14 +39,14 @@
     }
 
     .card-body {
-      // background-color: rgba(255, 255, 255, 0.2);
+      height: 4.375rem;
 
       .btn {
         .icon {
-          bottom: 2px;
-          height: 16px;
+          bottom: 0.125rem;
+          height: 1rem;
           position: 'relative';
-          width: 16px;
+          width: 1rem;
         }
 
         .divider {

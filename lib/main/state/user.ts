@@ -1,21 +1,20 @@
-import api from './api'
-import { isEqual } from 'lodash'
+import Api from '../util/Api'
 import State from '../util/State'
 
 class UserHelper {
   private state: State<User>
 
   constructor() {
-    this.state = new State(this)
+    this.state = new State('user')
 
-    api.poll('helix/users', undefined, this.handleResponse.bind(this))
+    Api.poll('helix/users', undefined, this.handleResponse.bind(this))
 
     this.state.action('get', () => this.get())
     this.state.action('fetch', () => this.fetch())
   }
 
   async fetch() {
-    const response = await api.call('helix/users')
+    const response = await Api.call('helix/users')
     this.handleResponse(response)
   }
 
@@ -25,9 +24,7 @@ class UserHelper {
 
   private handleResponse(response) {
     const user = UserHelper.getUser(response)
-    if (!isEqual(user, this.state.get())) {
-      this.state.set(user)
-    }
+    this.state.set(user)
   }
 
   static getUser(json): User {
@@ -35,18 +32,16 @@ class UserHelper {
 
     return {
       id: userData.id,
+      name: userData.name,
       displayName: userData.display_name,
       profileImageUrl: userData.profile_image_url,
     }
-  }
-
-  static get key() {
-    return 'user'
   }
 }
 
 export interface User {
   id: string
+  name: string
   displayName: string
   profileImageUrl: string
 }

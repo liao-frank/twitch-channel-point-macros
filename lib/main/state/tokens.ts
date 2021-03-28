@@ -30,7 +30,7 @@ class TokensHelper {
     })
 
     // Set-up state and extra actions.
-    this.state = new State(this)
+    this.state = new State('tokens')
     this.state.action('get', async () => (await this.get()) && null)
     this.state.action('fetch', () => this.fetch())
     this.state.action('revoke', () => this.revoke())
@@ -58,7 +58,10 @@ class TokensHelper {
     const { accessToken } = this.state.get()
     if (!accessToken) return
     await REVOKE(`?client_id=${TWITCH_CLIENT_ID}&token=${accessToken}`)
-    store.clear()
+    // TODO: Refactor hard-coded state keys.
+    store.delete('tokens')
+    store.delete('user')
+    store.delete('rewards')
   }
 
   setupPassport({ port }: OauthServer) {
@@ -133,10 +136,6 @@ class TokensHelper {
     app.get('/auth/failure', (_, res) =>
       res.send('Failure. <a href="/auth/twitch">Please try again.</a>')
     )
-  }
-
-  static get key() {
-    return 'tokens'
   }
 }
 

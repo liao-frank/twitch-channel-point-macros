@@ -38,6 +38,48 @@ export const MOCK_REWARDS_RESPONSE = {
       redemptions_redeemed_current_stream: null,
       cooldown_expires_at: null,
     },
+    {
+      broadcaster_name: 'torpedo09',
+      broadcaster_login: 'torpedo09',
+      broadcaster_id: '274637212',
+      id: 'd15ba511-3fb7-495e-aca0-14b228148c52',
+      image: {
+        url_1x: 'https://i.imgur.com/bYWgjYS.png',
+        url_2x: 'https://i.imgur.com/bYWgjYS.png',
+        url_4x: 'https://i.imgur.com/bYWgjYS.png',
+      },
+      background_color: '#d2f4ea',
+      is_enabled: true,
+      cost: 50000,
+      title: 'not game analysis',
+      prompt: '',
+      is_user_input_required: false,
+      max_per_stream_setting: {
+        is_enabled: false,
+        max_per_stream: 0,
+      },
+      max_per_user_per_stream_setting: {
+        is_enabled: false,
+        max_per_user_per_stream: 0,
+      },
+      global_cooldown_setting: {
+        is_enabled: false,
+        global_cooldown_seconds: 0,
+      },
+      is_paused: false,
+      is_in_stock: true,
+      default_image: {
+        url_1x:
+          'https://static-cdn.jtvnw.net/custom-reward-images/default-1.png',
+        url_2x:
+          'https://static-cdn.jtvnw.net/custom-reward-images/default-2.png',
+        url_4x:
+          'https://static-cdn.jtvnw.net/custom-reward-images/default-4.png',
+      },
+      should_redemptions_skip_request_queue: false,
+      redemptions_redeemed_current_stream: null,
+      cooldown_expires_at: null,
+    },
   ],
 }
 

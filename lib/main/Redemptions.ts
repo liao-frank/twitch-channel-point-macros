@@ -1,17 +1,14 @@
-import api from './api'
-import user from './user'
-import rewards, { Reward } from './rewards'
-import { POLL_INTERVAL } from '../const/app'
+import Api from './util/Api'
+import user from './state/user'
+import rewards, { Reward } from './state/rewards'
+import { REDEMPTION_POLL_INTERVAL } from './const/app'
 
 class RedemptionHelper {
   private readonly cutoffs = new Map<
     /* rewardId: */ string,
     /* redeemed: */ Date
   >()
-  private readonly listeners = new Map<
-    /* rewardId: */ string,
-    /* listener: */ RedemptionListener
-  >()
+  private readonly listeners = new Set<RedemptionListener>()
 
   constructor() {
     // Start polling interval.
@@ -19,21 +16,20 @@ class RedemptionHelper {
       const incoming = await this.fetch()
 
       for (const rewardId of Array.from(incoming.keys())) {
-        const listener = this.listeners.get(rewardId)
-        if (!listener) continue
-
         const redemptions = incoming.get(rewardId)
         if (redemptions) {
           for (const redemption of redemptions) {
-            listener(redemption)
+            this.listeners.forEach((listener) => {
+              listener(redemption)
+            })
           }
         }
       }
-    }, POLL_INTERVAL)
+    }, REDEMPTION_POLL_INTERVAL)
   }
 
-  setListener(rewardId: string, listener: RedemptionListener) {
-    this.listeners.set(rewardId, listener)
+  addListener(listener: RedemptionListener) {
+    this.listeners.add(listener)
   }
 
   // Fetches a map of new (aka incoming) redemptions, keyed by reward id.
@@ -74,10 +70,18 @@ class RedemptionHelper {
     params.append('sort', 'NEWEST')
     params.append('status', 'UNFULFILLED')
 
-    const response = await api.call(
-      `helix/channel_points/custom_rewards/redemptions?${params.toString()}`,
-      undefined
-    )
+    // TODO: Clean this up after live testing.
+    let response
+    try {
+      response = await Api.call(
+        `helix/channel_points/custom_rewards/redemptions?${params.toString()}`,
+        undefined
+      )
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
+
     console.log(response)
     let redemptions = RedemptionHelper.getRedemptions(response)
 
@@ -140,4 +144,4 @@ export interface Redemption {
   redeemedAt: string
 }
 
-export default new RedemptionHelper()
+export default RedemptionHelper

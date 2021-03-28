@@ -1,8 +1,10 @@
-import { app, BrowserWindow } from 'electron'
+import {app, BrowserWindow} from 'electron'
+import sequences from './state/sequences'
 import Window from './util/Window'
+import Redemptions, {Redemption} from './Redemptions'
 
-// Import API classes so they can set-up their actions.
-import './api'
+// Import state so they can set-up their actions.
+import './state'
 
 Window.create()
 
@@ -17,4 +19,10 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     Window.create()
   }
+})
+
+// Start redemption polling.
+const redemptions = new Redemptions()
+redemptions.addListener((redemption: Redemption) => {
+  sequences.trigger(redemption.rewardId)
 })

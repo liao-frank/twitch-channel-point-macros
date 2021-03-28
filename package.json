@@ -8,7 +8,7 @@
     "kill-node": "taskkill /im node.exe /F",
     "postinstall": "cd lib && yarn",
     "prettier": "prettier --write \"**/*.*(js|json|scss|ts|tsx)\"",
-    "rebuild-robotjs": "cd lib && yarn rebuild-robotjs",
+    "rebuild": "cd lib && yarn rebuild",
     "start": "cd lib && yarn start",
     "watch": "cd lib && yarn watch"
   },

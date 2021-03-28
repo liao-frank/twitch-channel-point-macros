@@ -17,9 +17,9 @@ class Window {
   async create() {
     await app.whenReady()
     const win = new BrowserWindow({
+      title: NAME,
       width: 800,
       height: 600,
-      title: NAME,
       webPreferences: {
         contextIsolation: false,
         nodeIntegration: true,
@@ -27,13 +27,13 @@ class Window {
     })
 
     win.loadFile(__dirname + '/../../renderer/dist/index.html')
-    this.currWinManager.short(win)
+    this.currWinManager!.short(win)
     return win
   }
 
   // Applies a callback to the current window and future windows.
   addListener(listener: WindowListener) {
-    this.currWinPromise.then(listener)
+    this.currWinPromise!.then(listener)
     this.listeners.add(listener)
   }
 
@@ -43,7 +43,7 @@ class Window {
 
     this.listeners.forEach(async (listener) => {
       const currWin = await this.currWinPromise
-      listener(currWin)
+      listener(currWin!)
     })
   }
 }
