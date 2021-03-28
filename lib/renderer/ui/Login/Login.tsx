@@ -8,7 +8,7 @@ import twitchLogoPurple from '~/asset/twitch-logo-white-purple.png'
 
 import './Login.scss'
 
-const Login = () => {
+const Login = ({ didInit }) => {
   return (
     <div
       className="b1e1 d-flex h-100 align-items-center justify-content-center"
@@ -23,14 +23,20 @@ const Login = () => {
           <img className="logo" src={twitchLogoPurple} />
           Channel Point Macros
         </Card.Header>
-        <Card.Body>
-          <Button variant="primary" onClick={logIn}>
-            <div className="d-flex align-items-center">
-              <img className="icon" src={twitchIconWhite} />
-              <div className="divider"></div>
-              Sign in
+        <Card.Body className="d-flex align-items-center justify-content-center">
+          {didInit ? (
+            <Button variant="primary" onClick={logIn}>
+              <div className="d-flex align-items-center">
+                <img className="icon" src={twitchIconWhite} />
+                <div className="divider"></div>
+                Sign in
+              </div>
+            </Button>
+          ) : (
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
             </div>
-          </Button>
+          )}
         </Card.Body>
       </Card>
     </div>

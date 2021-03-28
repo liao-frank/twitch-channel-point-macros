@@ -1,0 +1,39 @@
+@import '~/index.scss';
+
+.f390 {
+  overflow: auto;
+  padding-right: 0 !important;
+  width: 16rem !important;
+
+  .reward {
+    $horizontal-spacing: 0.75rem;
+
+    padding-left: $horizontal-spacing;
+    padding-right: $horizontal-spacing;
+
+    .icon {
+      @include backgroundImage;
+      border-radius: 0.4rem;
+      background-size: 1.2rem;
+      height: 2rem;
+      margin-right: $horizontal-spacing;
+      width: 2rem;
+    }
+
+    .title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .manage-button {
+    @include pillButton;
+    opacity: 0.6;
+    transition: $btn-transition, opacity 150ms ease-in-out;
+
+    &:hover {
+      box-shadow: $box-shadow;
+      opacity: 1;
+    }
+  }
+}

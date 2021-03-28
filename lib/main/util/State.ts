@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import Store from 'electron-store'
-import { kebabCase } from 'lodash'
+import { isEqual, kebabCase } from 'lodash'
 import Window from './Window'
 
 export const store = new Store()
@@ -9,8 +9,8 @@ const keys = new Set()
 class State<T> {
   private readonly key: string
 
-  constructor(instance) {
-    this.key = instance.constructor.key
+  constructor(key) {
+    this.key = key
 
     // Prevent duplicate keys.
     if (keys.has(this.key)) {
@@ -45,7 +45,11 @@ class State<T> {
   }
 
   set(next: T) {
-    store.set(this.key, next)
+    const curr = this.get()
+
+    if (!isEqual(curr, next)) {
+      store.set(this.key, next)
+    }
   }
 
   delete() {

@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "cd main && yarn && cd ../renderer && yarn",
-    "rebuild-robotjs": "node scripts/rebuild-robotjs.js",
+    "rebuild": "cd main && yarn rebuild",
     "start": "cd main && yarn run start",
     "watch": "concurrently \"cd main && yarn run watch\" \"cd renderer && yarn run watch\""
   },

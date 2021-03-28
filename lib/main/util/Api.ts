@@ -1,6 +1,6 @@
 import bent from 'bent'
-import { POLL_INTERVAL } from '../const/app'
-import tokens from './tokens'
+import { STATE_POLL_INTERVAL } from '../const/app'
+import tokens from '../state/tokens'
 import { TWITCH_CLIENT_ID } from '../const/env'
 
 const caller = bent('https://api.twitch.tv/', 'json')
@@ -61,7 +61,7 @@ class Api {
         if (e instanceof NoAccessTokenFoundError) return
         throw e
       }
-    }, POLL_INTERVAL)
+    }, STATE_POLL_INTERVAL)
   }
 }
 

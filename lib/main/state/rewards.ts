@@ -1,5 +1,4 @@
-import api from './api'
-import { isEqual } from 'lodash'
+import Api from '../util/Api'
 import user from './user'
 import State from '../util/State'
 import { MOCK_REWARDS_RESPONSE } from '../const/mock'
@@ -8,9 +7,9 @@ class RewardsHelper {
   private state: State<Reward[]>
 
   constructor() {
-    this.state = new State(this)
+    this.state = new State('rewards')
 
-    api.poll(
+    Api.poll(
       RewardsHelper.getPath,
       undefined,
       this.handleResponse.bind(this),
@@ -22,7 +21,7 @@ class RewardsHelper {
   }
 
   async fetch() {
-    const response = await api.call(
+    const response = await Api.call(
       RewardsHelper.getPath(),
       undefined,
       MOCK_MAP
@@ -36,9 +35,7 @@ class RewardsHelper {
 
   private handleResponse(response) {
     const rewards = RewardsHelper.getRewards(response)
-    if (!isEqual(rewards, this.state.get())) {
-      this.state.set(rewards)
-    }
+    this.state.set(rewards)
   }
 
   static getPath(): string {
@@ -50,20 +47,24 @@ class RewardsHelper {
   static getRewards(json): Reward[] {
     const rewardsData = json['data']
     return rewardsData.map((reward) => {
-      const { id, title, image, default_image, background_color } = reward
+      const {
+        id,
+        title,
+        prompt,
+        image,
+        default_image,
+        background_color,
+      } = reward
 
       return {
         id,
         title,
+        prompt,
         image,
         defaultImage: default_image,
         backgroundColor: background_color,
       }
     })
-  }
-
-  static get key() {
-    return 'rewards'
   }
 }
 
@@ -78,6 +79,7 @@ export interface ImageSet {
 export interface Reward {
   id: string
   title: string
+  prompt: string
   image?: ImageSet
   backgroundColor: string
   defaultImage: ImageSet

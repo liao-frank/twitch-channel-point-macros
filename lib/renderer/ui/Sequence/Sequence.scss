@@ -1,0 +1,50 @@
+@import '~/index.scss';
+
+.c771 {
+  font-size: 0.8rem;
+
+  .bi-play-circle {
+    cursor: pointer;
+  }
+
+  .form-label,
+  .form-check-label {
+    font-size: 0.8rem;
+  }
+
+  #enabled-switch {
+    cursor: pointer;
+  }
+
+  .action {
+    .action-delay-group,
+    .action-modifier-key-group {
+      width: 5rem;
+
+      .form-control {
+        text-align: right;
+      }
+    }
+
+    .bi-info-circle {
+      cursor: pointer;
+
+      &[aria-describedby^='popover']:before {
+        color: $green;
+        font-weight: 900 !important;
+      }
+    }
+
+    .remove-action {
+      cursor: pointer;
+    }
+  }
+
+  .add-action-buttons .rounded-pill {
+    @include pillButton;
+    font-size: 1rem;
+    letter-spacing: normal;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}

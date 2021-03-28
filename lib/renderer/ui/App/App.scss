@@ -1,0 +1,34 @@
+@import '~/index.scss';
+
+.c886 /* App */ {
+  overflow-x: hidden;
+
+  .navbar {
+    padding-bottom: 0.25rem;
+    padding-top: 0.25rem;
+
+    .twitch-icon {
+      bottom: 0.075rem;
+      height: 1.4rem;
+      margin-left: 0.5rem;
+      margin-right: 0.8rem;
+      position: relative;
+    }
+
+    .profile-icon {
+      border-radius: 50%;
+      height: 2.4rem;
+      margin-right: 0.6rem;
+      padding: 0.0675rem;
+      width: 2.4rem;
+    }
+
+    .display-name {
+      margin-right: 0.6rem;
+    }
+
+    .dropdown-menu {
+      right: 0;
+    }
+  }
+}
