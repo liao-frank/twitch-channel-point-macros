@@ -225,19 +225,19 @@ const Action = ({ sequence, action, index }) => {
 }
 
 const addAction = (sequence, action) => {
-  const actions = [...sequence.actions] || []
+  const actions = [...(sequence.actions || [])] || []
   actions.push(action)
   setSequence(sequence, { actions })
 }
 
 const removeAction = (sequence, index) => {
-  const actions = [...sequence.actions] || []
+  const actions = [...(sequence.actions || [])] || []
   actions.splice(index, 1)
   setSequence(sequence, { actions })
 }
 
 const updateAction = (sequence, index, next) => {
-  const actions = [...sequence.actions] || []
+  const actions = [...(sequence.actions || [])] || []
   if (index < actions.length) {
     actions[index] = { ...actions[index], ...next }
     setSequence(sequence, { actions })

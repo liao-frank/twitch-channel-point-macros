@@ -115,9 +115,9 @@ class App extends React.Component<{}, any> {
   }
 
   private async selectReward(rewardId) {
-    const sequence = this.state.sequences[rewardId]
+    const sequence = this.state.sequences?.[rewardId]
     if (!sequence) {
-      ipcRenderer.invoke('set-sequences', { rewardId })
+      ipcRenderer.invoke('set-sequences', { rewardId, actions: [] })
     }
     this.setState({ selectedReward: rewardId })
   }
