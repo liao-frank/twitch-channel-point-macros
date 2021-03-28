@@ -53,7 +53,7 @@ class SequencesHelper {
         if (keys) {
           // TODO: Move escape code to common directory.
           if (keys.startsWith('key:') || keys.length === 1) {
-            const key = keys.replace('key:', '')
+            const key = keys.replace('key:', '').toLowerCase()
             if (modifierKey) {
               robot.keyTap(key, modifierKey)
             } else {

@@ -12,8 +12,5 @@
   "devDependencies": {
     "concurrently": "^6.0.0"
   },
-  "dependencies": {
-    "node-abi": "^2.21.0",
-    "node-cmd": "^4.0.0"
-  }
+  "dependencies": {}
 }

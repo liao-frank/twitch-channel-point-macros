@@ -1,7 +1,7 @@
-import {app, BrowserWindow} from 'electron'
+import { app, BrowserWindow } from 'electron'
 import sequences from './state/sequences'
 import Window from './util/Window'
-import Redemptions, {Redemption} from './Redemptions'
+import Redemptions, { Redemption } from './Redemptions'
 
 // Import state so they can set-up their actions.
 import './state'
