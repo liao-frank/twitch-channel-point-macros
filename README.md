@@ -26,3 +26,8 @@ _As of Mar 29, 2021, this project is **not** ready for production usage even tho
 ```
 yarn make
 ```
+
+## Privacy and other disclaimers
+As of Mar 29, 2021,
+1. The app does **not** send data anywhere except back-and-forth with Twitch. All your data are belong to you.
+2. This project and its creators are **not** affiliated with any of the platforms and applications detailed above, including Twitch.
