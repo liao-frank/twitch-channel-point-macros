@@ -71,18 +71,11 @@ class RedemptionHelper {
     params.append('status', 'UNFULFILLED')
 
     // TODO: Clean this up after live testing.
-    let response
-    try {
-      response = await Api.call(
-        `helix/channel_points/custom_rewards/redemptions?${params.toString()}`,
-        undefined
-      )
-    } catch (e) {
-      console.log(e)
-      throw e
-    }
+    const response = await Api.call(
+      `helix/channel_points/custom_rewards/redemptions?${params.toString()}`,
+      undefined
+    )
 
-    console.log(response)
     let redemptions = RedemptionHelper.getRedemptions(response)
 
     const newCutoff = redemptions[0]

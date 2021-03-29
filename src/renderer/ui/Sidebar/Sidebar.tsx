@@ -54,7 +54,7 @@ const openViewerRewardsDashboard = (user) => {
   shell.openExternal(
     `https://dashboard.twitch.tv/u/${
       name || displayName
-    }/viewer-rewards/channel-points`
+    }/viewer-rewards/channel-points/rewards`
   )
 }
 

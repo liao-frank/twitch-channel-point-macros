@@ -209,7 +209,12 @@ const Action = ({ sequence, action, index }) => {
           return (
             <Form.Group className="flex-fill me-3" controlId="actionCommand">
               <Form.Label>Command</Form.Label>
-              <Form.Control type="text" onChange={getUpdater('command')} />
+              <Form.Control
+                className="font-monospace"
+                type="text"
+                value={command}
+                onChange={getUpdater('command')}
+              />
             </Form.Group>
           )
         }
