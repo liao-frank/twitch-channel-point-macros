@@ -21,7 +21,7 @@ const Sequence = ({ reward, sequence }) => {
       <div className="d-flex">
         <div className="flex-fill">
           <h1 className="display-1 fs-3">{title}</h1>
-          {prompt && <p className="w-50">{prompt}</p>}
+          {prompt && <p className="w-75 mb-0">{prompt}</p>}
         </div>
         <div className="align-self-center">
           <OverlayTrigger
