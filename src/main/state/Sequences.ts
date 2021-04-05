@@ -1,32 +1,37 @@
 import cmd from 'node-cmd'
 import psList from 'ps-list'
 import robot from 'robotjs'
-import State from '../util/State'
+import { Action, State } from '../util'
+import {
+  ActionType,
+  SequenceState,
+  SequenceActionState,
+  SequencesState,
+  StateKey,
+} from '../../common/type'
 
 class SequencesHelper {
-  private state: State<Sequences>
+  private state: State<SequencesState>
 
   constructor() {
-    this.state = new State('sequences')
+    this.state = new State(StateKey.Sequences)
 
-    this.state.action('get', () => this.get())
-    this.state.action('set', (_, sequence) => this.set(sequence))
-    this.state.action('trigger', (_, rewardId) => this.trigger(rewardId, true))
+    Action.handle(ActionType.SequenceSet, (sequence) => this.set(sequence))
+    Action.handle(ActionType.SequenceTrigger, (rewardId) =>
+      this.trigger(rewardId, true)
+    )
   }
 
-  get(): Sequences | undefined {
-    return this.state.get()
-  }
-
-  set(sequence: Sequence) {
-    const sequences = this.get() || {}
+  set(sequence: SequenceState) {
+    const sequences = this.state.read() || {}
     sequences[sequence.rewardId] = sequence
-    this.state.set(sequences)
+    this.state.update(sequences)
   }
 
   // Returns whether or not the trigger passed its conditions and performed its sequence.
   async trigger(rewardId: string, overrideEnabled = false) {
-    const sequence = this.state.get()[rewardId]
+    const sequences = await this.state.readDefined()
+    const sequence = sequences[rewardId]
 
     if (!sequence) return
     if (!overrideEnabled && !sequence.enabled) return
@@ -45,7 +50,7 @@ class SequencesHelper {
     return true
   }
 
-  private async executeAction(action: Action) {
+  private async executeAction(action: SequenceActionState) {
     const { delay, keys, modifierKey, command } = action
 
     return new Promise<void>((resolve) => {
@@ -83,24 +88,6 @@ class SequencesHelper {
       .sort()
     return dedupedList
   }
-}
-
-interface Action {
-  delay: number
-  keys?: string
-  modifierKey?: string
-  command?: string
-}
-
-interface Sequence {
-  enabled: boolean
-  rewardId: string
-  actions: Action[]
-  openedApp?: string
-}
-
-type Sequences = {
-  [rewardId: string]: Sequence
 }
 
 export default new SequencesHelper()

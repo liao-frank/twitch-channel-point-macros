@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card'
 import spaceship from '~/asset/spaceship.gif'
 import twitchIconWhite from '~/asset/twitch-icon-transparent-white.png'
 import twitchLogoPurple from '~/asset/twitch-logo-white-purple.png'
+import { ActionType } from '~/../common/type'
 
 import './Login.scss'
 
@@ -25,7 +26,10 @@ const Login = ({ didInit }) => {
         </Card.Header>
         <Card.Body className="d-flex align-items-center justify-content-center">
           {didInit ? (
-            <Button variant="primary" onClick={logIn}>
+            <Button
+              variant="primary"
+              onClick={() => ipcRenderer.invoke(ActionType.TokensFetch)}
+            >
               <div className="d-flex align-items-center">
                 <img className="icon" src={twitchIconWhite} />
                 <div className="divider"></div>
@@ -41,10 +45,6 @@ const Login = ({ didInit }) => {
       </Card>
     </div>
   )
-}
-
-const logIn = async () => {
-  return await ipcRenderer.invoke('fetch-tokens')
 }
 
 export default Login

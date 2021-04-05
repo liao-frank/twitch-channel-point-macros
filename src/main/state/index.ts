@@ -1,4 +1,4 @@
-export { default as rewards } from './rewards'
-export { default as sequences } from './sequences'
-export { default as tokens } from './tokens'
-export { default as user } from './user'
+export { default as Rewards } from './Rewards'
+export { default as Sequences } from './Sequences'
+export { default as Tokens } from './Tokens'
+export { default as User } from './User'

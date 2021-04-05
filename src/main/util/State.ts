@@ -1,51 +1,79 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow } from 'electron'
 import Store from 'electron-store'
-import { isEqual, kebabCase } from 'lodash'
+import { isEqual } from 'lodash'
+import Action from './Action'
 import Window from './Window'
+import { ActionType } from '../../common/type'
 
-export const store = new Store()
+// Encrypt with key for obscurity only.
+export const store = new Store({
+  encryptionKey: '27996d86-1b75-4f68-95eb-c2d26885f016',
+})
 const keys = new Set()
+
+// Register actions.
+Action.handle(ActionType.StateRead, (key) => {
+  if (key) {
+    return store.get(key)
+  }
+  return store.store
+})
 
 class State<T> {
   private readonly key: string
 
+  private currentWindow?: BrowserWindow
+
   constructor(key) {
     this.key = key
 
-    // Prevent duplicate keys.
+    // Check for duplicate keys.
     if (keys.has(this.key)) {
-      throw Error(`Duplicate state for key '${this.key}'.`)
+      console.error(`Duplicate state for key '${this.key}'.`)
+      process.exit()
     }
     keys.add(this.key)
 
-    // Set-up state listener.
-    Window.addListener((win: BrowserWindow) => {
-      store.onDidChange(this.key, async (state) => {
-        if (this.key === 'tokens' && state) {
-          state = null
+    Window.onUpdateImmediate((window) => (this.currentWindow = window))
+
+    // Set-up state synchronization when the window is ready.
+    store.onDidChange(this.key, () => this.emitUpdate())
+  }
+
+  read(): T | undefined {
+    return store.get(this.key) as T
+  }
+
+  // Returns a promise that resolves when the value is defined.
+  async readDefined(): Promise<T> {
+    return new Promise((resolve) => {
+      this.onUpdateImmediate((value, dispose) => {
+        if (value !== undefined) {
+          resolve(value)
+          dispose()
         }
-        win.webContents.send('state', {
-          [this.key]: state,
-        })
       })
     })
   }
 
-  // Registers an IPC action handler. This clears old handlers for the given prefix.
-  action(prefix: string, handler) {
-    const action = `${prefix.toLowerCase()}-${kebabCase(this.key)}`
-    // Clear pre-existing handlers.
-    ipcMain.removeHandler(action)
-    // Register new handler.
-    ipcMain.handle(action, handler)
+  // Applies a handler to all values now and in the future.
+  onUpdateImmediate(
+    handler: (value: T | undefined, dispose: () => void) => void
+  ): () => {} {
+    const dispose = store.onDidChange(this.key, (value: T | undefined) =>
+      handler(value, dispose)
+    )
+
+    const curr = this.read()
+    if (curr !== undefined) {
+      handler(curr, dispose)
+    }
+    return dispose
   }
 
-  get(): T {
-    return store.get(this.key) as T
-  }
-
-  set(next: T) {
-    const curr = this.get()
+  // Set the given value to the store if it is different.
+  update(next: T) {
+    const curr = this.read()
 
     if (!isEqual(curr, next)) {
       store.set(this.key, next)
@@ -54,6 +82,19 @@ class State<T> {
 
   delete() {
     store.delete(this.key)
+  }
+
+  private emitUpdate() {
+    let curr: T | undefined | null = this.read()
+
+    // Exceptional filter for tokens, so they don't appear in the renderer process.
+    if (this.key === 'tokens' && curr !== undefined) {
+      curr = null
+    }
+
+    this.currentWindow?.webContents.send(ActionType.StateUpdate, {
+      [this.key]: curr,
+    })
   }
 }
 

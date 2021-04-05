@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Popover from 'react-bootstrap/Popover'
 import Tooltip from 'react-bootstrap/Tooltip'
+import { ActionType } from '~/../common/type'
 
 import './Sequence.scss'
 
@@ -32,7 +33,9 @@ const Sequence = ({ reward, sequence }) => {
           >
             <i
               className="bi bi-play-circle text-muted"
-              onClick={() => ipcRenderer.invoke('trigger-sequences', rewardId)}
+              onClick={() =>
+                ipcRenderer.invoke(ActionType.SequenceTrigger, rewardId)
+              }
             ></i>
           </OverlayTrigger>
         </div>
@@ -255,7 +258,7 @@ const setSequence = (sequence, next) => {
     ...sequence,
     ...next,
   }
-  ipcRenderer.invoke('set-sequences', nextSequence)
+  ipcRenderer.invoke(ActionType.SequenceSet, nextSequence)
 }
 
 export default Sequence

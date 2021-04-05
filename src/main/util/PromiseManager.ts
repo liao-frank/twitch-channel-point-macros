@@ -1,14 +1,30 @@
 class PromiseManager<T> {
   public readonly promise: Promise<T>
-  public fulfilled = false
-  public cancelled = false
-  public shorted = false
+
+  public value: T | undefined
+
+  public fulfilled = false // meaning that the operation was completed successfully.
+  public shorted = false // meaning that the operation was manually completed successfully.
+
+  public rejected = false // meaning that the operation failed.
+  public cancelled = false // meaning that the operation manually failed.
 
   private resolver
   private rejector
 
   constructor(promise, resolver, rejector) {
     this.promise = promise
+
+    // Set basic state when promise is complete.
+    this.promise
+      .then((value) => {
+        this.fulfilled = true
+        this.value = value
+      })
+      .catch((e) => {
+        this.rejected = true
+      })
+
     this.resolver = resolver
     this.rejector = rejector
   }
@@ -17,14 +33,12 @@ class PromiseManager<T> {
   cancel() {
     this.rejector(new Error('Cancelled by PromiseManager.'))
     this.cancelled = true
-    this.fulfilled = true
   }
 
   // Immediately resolve the promise with the given value.
   short(value) {
     this.resolver(value)
     this.shorted = true
-    this.fulfilled = true
   }
 
   static from<X>(promise: Promise<X>): PromiseManager<X> {

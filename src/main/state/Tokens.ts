@@ -6,23 +6,22 @@ import { OAuth2Strategy } from 'passport-oauth'
 import portastic from 'portastic'
 import { PORT_OPTIONS, SCOPES } from '../const/app'
 import { TWITCH_CLIENT_ID, TWITCH_SECRET } from '../const/env'
-import PromiseManager from '../util/PromiseManager'
-import State, { store } from '../util/State'
+import { Action, PromiseManager, State, store } from '../util'
+import { ActionType, StateKey } from '../../common/type'
 
 class TokensHelper {
-  public oauthServer?: OauthServer
-  public oauthServerPromise: Promise<OauthServer>
+  public state: State<Tokens>
+
   private readonly oauthServerPromiseManager: PromiseManager<OauthServer>
 
+  private oauthServerPromise: Promise<OauthServer>
   private fetchPromiseManager?: PromiseManager<Tokens>
-  private state: State<Tokens>
 
   constructor() {
     this.oauthServerPromiseManager = PromiseManager.dependent<OauthServer>()
     this.oauthServerPromise = this.oauthServerPromiseManager.promise
     // Create and set-up OAuth server.
     TokensHelper.createServer().then((oauthServer) => {
-      this.oauthServer = oauthServer
       this.oauthServerPromiseManager.short(oauthServer)
       TokensHelper.setupServer(oauthServer)
       // Set-up passport.
@@ -30,17 +29,18 @@ class TokensHelper {
     })
 
     // Set-up state and extra actions.
-    this.state = new State('tokens')
-    this.state.action('get', async () => (await this.get()) && null)
-    this.state.action('fetch', () => this.fetch())
-    this.state.action('revoke', () => this.revoke())
+    this.state = new State(StateKey.Tokens)
+
+    Action.handle(ActionType.TokensFetch, () => this.fetch())
+    Action.handle(ActionType.TokensRevoke, () => this.revoke())
+    Action.handle(ActionType.TokensValidate, () => this.validate())
   }
 
   async fetch() {
-    if (!this.oauthServer) return
+    const oauthServer = await this.oauthServerPromise
 
     electron.shell.openExternal(
-      `http://localhost:${this.oauthServer.port}/auth/twitch/`
+      `http://localhost:${oauthServer.port}/auth/twitch/`
     )
 
     if (this.fetchPromiseManager && !this.fetchPromiseManager.fulfilled) {
@@ -49,19 +49,30 @@ class TokensHelper {
 
     this.fetchPromiseManager = PromiseManager.dependent<Tokens>()
     const result = await this.fetchPromiseManager.promise
-    this.state.set(result)
+    this.state.update(result)
 
     return result
   }
 
   async revoke() {
-    const { accessToken } = this.state.get()
-    if (!accessToken) return
-    await REVOKE(`?client_id=${TWITCH_CLIENT_ID}&token=${accessToken}`)
-    // TODO: Refactor hard-coded state keys.
-    store.delete('tokens')
-    store.delete('user')
-    store.delete('rewards')
+    const tokens = this.state.read()
+    if (!tokens || !tokens.accessToken) return
+    await REVOKE(`?client_id=${TWITCH_CLIENT_ID}&token=${tokens.accessToken}`)
+    store.delete(StateKey.Rewards)
+    store.delete(StateKey.User)
+    this.state.delete()
+  }
+
+  async validate(): Promise<boolean> {
+    const tokens = this.state.read()
+    if (tokens === undefined) return false
+
+    try {
+      await VALIDATE('', null, { Authorization: `OAuth ${tokens.accessToken}` })
+      return true
+    } catch {
+      return false
+    }
   }
 
   setupPassport({ port }: OauthServer) {
@@ -89,16 +100,6 @@ class TokensHelper {
       // @ts-ignore
       done(null, user)
     })
-  }
-
-  async get(): Promise<Tokens | undefined> {
-    const tokens = this.state.get()
-    try {
-      await VALIDATE(``, null, { Authorization: `OAuth ${tokens.accessToken}` })
-      return tokens
-    } catch {
-      return
-    }
   }
 
   static async createServer(): Promise<OauthServer> {
@@ -142,9 +143,10 @@ class TokensHelper {
 const REVOKE = bent('https://id.twitch.tv/oauth2/revoke', 'POST', 'string')
 const VALIDATE = bent('https://id.twitch.tv/oauth2/validate', 'json')
 
+// TODO: Use express types.
 interface OauthServer {
-  app: express.App
-  server: express.Server
+  app: any
+  server: any
   port: number
 }
 

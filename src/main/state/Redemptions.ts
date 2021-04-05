@@ -1,7 +1,6 @@
-import Api from './util/Api'
-import user from './state/user'
-import rewards, { Reward } from './state/rewards'
-import { REDEMPTION_POLL_INTERVAL } from './const/app'
+import Api from '../util/Api'
+import user from './User'
+import rewards, { Reward } from './Rewards'
 
 class RedemptionHelper {
   private readonly cutoffs = new Map<
@@ -10,23 +9,7 @@ class RedemptionHelper {
   >()
   private readonly listeners = new Set<RedemptionListener>()
 
-  constructor() {
-    // Start polling interval.
-    setInterval(async () => {
-      const incoming = await this.fetch()
-
-      for (const rewardId of Array.from(incoming.keys())) {
-        const redemptions = incoming.get(rewardId)
-        if (redemptions) {
-          for (const redemption of redemptions) {
-            this.listeners.forEach((listener) => {
-              listener(redemption)
-            })
-          }
-        }
-      }
-    }, REDEMPTION_POLL_INTERVAL)
-  }
+  constructor() {}
 
   addListener(listener: RedemptionListener) {
     this.listeners.add(listener)
@@ -70,7 +53,6 @@ class RedemptionHelper {
     params.append('sort', 'NEWEST')
     params.append('status', 'UNFULFILLED')
 
-    // TODO: Clean this up after live testing.
     const response = await Api.call(
       `helix/channel_points/custom_rewards/redemptions?${params.toString()}`,
       undefined
@@ -137,4 +119,4 @@ export interface Redemption {
   redeemedAt: string
 }
 
-export default RedemptionHelper
+export default new RedemptionHelper()

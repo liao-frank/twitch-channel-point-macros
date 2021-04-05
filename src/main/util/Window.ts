@@ -1,51 +1,63 @@
 import { app, BrowserWindow } from 'electron'
 import PromiseManager from './PromiseManager'
-import { NAME } from '../const/app'
+import { WINDOW_OPTIONS } from '../const/app'
 
-type WindowListener = (window: BrowserWindow) => void
+type WindowHandler = (window?: BrowserWindow) => void
 
 class Window {
-  private currWinManager?: PromiseManager<BrowserWindow>
-  private currWinPromise?: Promise<BrowserWindow>
-  private listeners = new Set<WindowListener>()
+  private readonly handlers = new Set<WindowHandler>()
+
+  private windowManager?: PromiseManager<BrowserWindow>
 
   constructor() {
-    this.await()
-    app.on('window-all-closed', this.await.bind(this))
+    // Prevent multiple instances.
+    if (!app.requestSingleInstanceLock()) {
+      console.error('Could not acquire single instance lock.')
+      process.exit()
+    }
+
+    // Re-focus the first instance if a second one is trying to exist.
+    app.on('second-instance', () => {
+      if (this.windowManager?.fulfilled) {
+        const window = this.windowManager!.value!
+        if (window.isMinimized()) window.restore()
+        window.focus()
+      }
+    })
+
+    this.listen()
+    app.on('window-all-closed', () => this.listen())
   }
 
   async create() {
     await app.whenReady()
-    const win = new BrowserWindow({
-      title: NAME,
-      width: 800,
-      height: 600,
-      webPreferences: {
-        contextIsolation: false,
-        nodeIntegration: true,
-      },
-    })
+    const window = new BrowserWindow(WINDOW_OPTIONS)
 
-    win.loadFile(__dirname + '/../../renderer/dist/index.html')
-    this.currWinManager!.short(win)
-    return win
+    window.loadFile(FILE_PATH)
+    this.windowManager!.short(window)
+    return window
   }
 
-  // Applies a callback to the current window and future windows.
-  addListener(listener: WindowListener) {
-    this.currWinPromise!.then(listener)
-    this.listeners.add(listener)
+  // Applies a handler to all windows now and in the future.
+  onUpdateImmediate(handler: WindowHandler) {
+    if (this.windowManager?.fulfilled) {
+      const window = this.windowManager!.value!
+      handler(window)
+    }
+
+    this.handlers.add(handler)
   }
 
-  private await() {
-    this.currWinManager = PromiseManager.dependent()
-    this.currWinPromise = this.currWinManager.promise
+  // Sets up for the next available window.
+  private async listen() {
+    this.windowManager = PromiseManager.dependent()
 
-    this.listeners.forEach(async (listener) => {
-      const currWin = await this.currWinPromise
-      listener(currWin!)
-    })
+    this.handlers.forEach((func) => func())
+    const window = await this.windowManager.promise
+    this.handlers.forEach((func) => func(window))
   }
 }
+
+const FILE_PATH = __dirname + '/../../renderer/dist/index.html'
 
 export default new Window()
